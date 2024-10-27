@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { createAccessToken } from "../middleware/jwt";
 import Joi from "joi";
-import { UserData, CreateUser } from "../database/user_data";
+import { UserData, CreateUser ,UpdateUser} from "../database/user_data";
 
 export interface useraDataObj {
   firstname: string;
@@ -92,25 +92,26 @@ export const createUser = async (req: Request, res: Response) => {
   }
 };
 
-// export const updateUser = async (req: Request, res: Response) => {
-//     const userSchema = Joi.object({
-//         firstname: Joi.string().required(),
-//         lastname: Joi.string().required(),
-//         email: Joi.string().email().required(),
-//         details: Joi.string()
-//     });
-//     const { error, value } = userSchema.validate(req.body, { allowUnknown: false });
+export const updateUser = async (req: Request, res: Response) => {
+    const userSchema = Joi.object({
+        firstname: Joi.string().required(),
+        lastname: Joi.string().required(),
+        email: Joi.string().email().required(),
+        password:Joi.string().required(),
+        details: Joi.string()
+    });
+    const { error, value } = userSchema.validate(req.body, { allowUnknown: false });
 
-//     if (error) {
-//         return res.status(400).json({ error: error.details[0].message });
-//     }
-//     try {
-//         const userupdate = await User.update( value , { where: { email: value.email } });
-//         if (userupdate[0] === 0) {
-//             return res.status(404).json({ error: 'User not found' });
-//         }
-//     res.status(200).json({ message: 'User updated successfully' });
-//     } catch (error: any) {
-//         res.status(500).json({ error: error.message });
-//     }
-// };
+    if (error) {
+        return res.status(400).json({ error: error.details[0].message });
+    }
+    try {
+        const userupdate:any = await UpdateUser(value ,req.user?.userId )
+        if (userupdate[0] === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+    res.status(200).json({ message: 'User updated successfully' });
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+};

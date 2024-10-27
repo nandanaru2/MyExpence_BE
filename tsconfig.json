@@ -7,6 +7,6 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["server.ts","tests"], 
+  "include": ["server.ts","tests","src/types/Usertypes.d.ts"], 
   "exclude": ["node_modules"]
 }
