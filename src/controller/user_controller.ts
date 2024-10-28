@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { createAccessToken } from "../middleware/jwt";
 import Joi from "joi";
-import { UserData, CreateUser ,UpdateUser} from "../database/user_data";
+import { UserData, CreateUser ,UpdateUser,UpdatePassword} from "../database/user_data";
 
 export interface useraDataObj {
   firstname: string;
@@ -97,7 +97,6 @@ export const updateUser = async (req: Request, res: Response) => {
         firstname: Joi.string().required(),
         lastname: Joi.string().required(),
         email: Joi.string().email().required(),
-        password:Joi.string().required(),
         details: Joi.string()
     });
     const { error, value } = userSchema.validate(req.body, { allowUnknown: false });
@@ -115,3 +114,23 @@ export const updateUser = async (req: Request, res: Response) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const updateUserPassword = async (req: Request, res: Response) => {
+  const userSchema = Joi.object({
+      password:Joi.string().required(),
+  });
+  const { error, value } = userSchema.validate(req.body, { allowUnknown: false });
+
+  if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+  }
+  try {
+      const userupdate:any = await UpdatePassword(value ,req.user?.userId )
+      if (userupdate[0] === 0) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+  res.status(200).json({ message: 'Password updated successfully' });
+  } catch (error: any) {
+      res.status(500).json({ error: error.message });
+  }
+}

@@ -36,6 +36,23 @@ const UpdateUser = async (User_data: any,UserId:string | undefined) => {
   try {
     const userDetails = await UserData(["email"], { userId: UserId });
     if (userDetails) {
+      const UpdateUser= await User.update( User_data , { where: { userId: UserId } })
+      if (UpdateUser) {
+        return { Message: "User Data Has Been Updated", statusCode: 200 };
+      } else {
+        return { Message: "Issue While creating the user", statusCode: 400 };
+      }
+    } else {
+      return { Message: "User Does Not Exist", statusCode: 406 };
+    }
+  } catch (error) {
+    return null;
+  }
+};
+const UpdatePassword = async (User_data: any,UserId:string | undefined) => {
+  try {
+    const userDetails = await UserData(["email"], { userId: UserId });
+    if (userDetails) {
       const UpdateUser= await User.update( User_data , { where: { userId: UserId },individualHooks: true })
       if (UpdateUser) {
         return { Message: "User Data Has Been Updated", statusCode: 200 };
@@ -50,4 +67,4 @@ const UpdateUser = async (User_data: any,UserId:string | undefined) => {
   }
 };
 
-export { UserData, CreateUser ,UpdateUser };
+export { UserData, CreateUser ,UpdateUser,UpdatePassword };
